@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css?family=Crimson+Text');
+@import url('https://fonts.googleapis.com/css?family=EB+Garamond');
+@import url('https://use.fontawesome.com/releases/v5.7.2/css/all.css');
+
+body {
+    font-family: "Linux Libertine", "Linux Libertine O", "Crimson Text", Georgia, serif;
+    font-size: 19px;
+}
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6
+{
+    font-family: "EB Garamond", Georgia, serif;
+}
+
+div.body {
+    max-width: 100%;
+}
+
+code {
+    background-color: inherit;
+    color: indigo
+}
+
+pre {
+    padding: 5px 10px;
+}
+
+div.admonition p.admonition-title {
+    font-size: 21px;
+}
+
+p.admonition-title::after {
+    content: none;
+}
+
+div.admonition {
+    padding: 10px 15px;
+}
+
+
+div.body p {
+    margin: 10px 0;
+}
+
+pre, tt, code {
+    font-size: 0.8em
+}
+
+html.is-animating .body {
+    opacity: 0;
+}
+
+html.is-animating .reference.internal,
+html.is-animating .current
+{
+    opacity: 0;
+    transform: translateX(-10px)
+}
+
+.body {
+    transition: 0.3s;
+    opacity: 1;
+    transition-delay: 0.1s;
+}
+.reference.internal {
+    transition: 0.7s;
+    opacity: 1;
+}
+.current {
+    transition: 0.7s;
+    opacity: 1;
+}
