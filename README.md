@@ -1,7 +1,9 @@
-# Assets et config de la version Web du Mémo Python
+# Assets et config de la version Web du [Mémo Python](https://github.com/arkelis/memo-python)
 
-Version web de la [version LaTeX](https://github.com/arkelis/memo-python)
+Elle est disponible [ici](https://www.pycolore.fr/python/).
 
-Le site est généré grâce à [Sphinx](http://www.sphinx-doc.org/).
+Processus de génération :
 
-Il y a des petites animations gérées avec [Swup](https://swup.js.org).
+- [https://github.com/arkelis/panoramix](Panoramix) convertit les fichiers TeX en RST grâce à Pandoc (avec un prétraitement).
+- Le site est généré grâce à [Sphinx](http://www.sphinx-doc.org/).
+- Il y a des petites animations gérées avec [Swup](https://swup.js.org).
