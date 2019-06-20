@@ -1,6 +1,6 @@
 window.onload = function() {
     const options = {
-        linkSelector: 'a:not([href^="http"])',
+        linkSelector: 'a:not([href^="http"]):not([href^="#"])',
         animationSelector: ".body",
         containers: [".document"],
     }
@@ -16,6 +16,7 @@ window.onload = function() {
             }    
         } catch (error) {
         }
+        $("#searchbox").show(0)
     }
     initPage()
     const swup = new Swup(options)
