@@ -4,6 +4,6 @@ Elle est disponible [ici](https://www.pycolore.fr/python/).
 
 Processus de génération :
 
-- [https://github.com/arkelis/panoramix](Panoramix) convertit les fichiers TeX en RST grâce à Pandoc (avec un prétraitement).
+- [Panoramix](https://github.com/arkelis/panoramix) convertit les fichiers TeX en RST grâce à Pandoc (avec un prétraitement).
 - Le site est généré grâce à [Sphinx](http://www.sphinx-doc.org/).
 - Il y a des petites animations gérées avec [Swup](https://swup.js.org).
