@@ -1,5 +1,4 @@
 .vscode
-POO
 _build
-*.rst
 post-pandoc.py
+__pycache__

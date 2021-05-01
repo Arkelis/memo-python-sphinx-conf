@@ -12,14 +12,14 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.append(os.path.abspath('./_ext'))
 
 # -- Project information -----------------------------------------------------
 
 project = 'Mémo Python'
-copyright = '2019, Guillaume Fayard'
+copyright = '2021, Guillaume Fayard'
 author = 'Guillaume Fayard'
 
 # The short X.Y version
@@ -37,10 +37,11 @@ release = ''
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-# extensions = [
-#    'sphinx.ext.mathjax',
-#    'sphinxcontrib.inlinesyntaxhighlight'
-# ]
+extensions = [
+    "directives",
+    # 'sphinx.ext.mathjax',
+    # 'sphinxcontrib.inlinesyntaxhighlight'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -78,26 +79,20 @@ highlight_language = 'python3'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'bootstrap'
-# html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-html_title = "Mémo Python | PyColore"
+html_theme = 'furo'
+html_title = "Mémo Python"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 
 html_theme_options = {
-    'page_width': '1140px',
-    'show_related': 'true',
-    'show_relbar_bottom': 'true',
-    'description': 'Amoncellement de connaissances personnelles sur le langage du serpent.',
-    'body_text': '#000',
-    'extra_nav_links': {
-        r"<i class='fab fa-github'></i>&ensp;Code source": "https://github.com/arkelis/memo-python",
-        r"<i class='fas fa-globe'></i>&ensp;Pycolore": "https://www.pycolore.fr",
+    "light_css_variables": {
+        "sidebar-item-spacing-vertical": "0.25rem",
+        "code-font-size": "var(--font-size--small)",
+        "font-stack": "Fira Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji",
+        "font-stack--monospace": "Consolas,SFMono-Regular,Menlo,Consolas,Monaco,Liberation Mono,Lucida Console,monospace",
     },
-    'font_family': 'Garamond, Georgia, serif',
-    'pre_bg': '#F8F8F8',
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -113,16 +108,16 @@ html_static_path = ['_static']
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'localtoc.html',
-        # 'relations.html',
-        'searchbox.html',
-        # 'donate.html',
-    ]
-}
+# html_sidebars = {
+#     '**': [
+#         'about.html',
+#         'navigation.html',
+#         'localtoc.html',
+#         # 'relations.html',
+#         'searchbox.html',
+#         # 'donate.html',
+#     ]
+# }
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -183,6 +178,6 @@ texinfo_documents = [
 # -- Polices personnalisées --------------------------------------------------
 
 def setup(app):
-    app.add_stylesheet("pycolore.css")  # also can be a full URL
-    app.add_javascript("https://unpkg.com/swup@latest/dist/swup.min.js")
-    app.add_javascript("pycolore.js")
+    app.add_css_file("pycolore.css")  # also can be a full URL
+    # app.add_js_file("https://unpkg.com/swup@latest/dist/swup.min.js")
+    # app.add_js_file("pycolore.js")
