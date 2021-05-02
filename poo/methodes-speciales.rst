@@ -1,11 +1,10 @@
 Méthodes spéciales
 ==================
 
-Python est un langage avec une syntaxe de haut niveau, c’est-à-dire
-facilement compréhensible par l’utilisateur humain. Derrière cette
-syntaxe se cachent des méthodes appelées méthodes spéciales. On les
-reconnaît par la présence de soulignés qui encadrent leur nom, c’est le
-cas de ``__new__()`` et ``__init__()``.
+Python est un langage avec une syntaxe de haut niveau, on le lit (presque)
+comme on lit un livre. Derrière cette syntaxe se cachent des méthodes appelées
+méthodes spéciales. On les reconnaît par la présence de soulignés qui
+encadrent leur nom, c’est le cas de ``__new__()`` et ``__init__()``.
 
 **Exemples :**
 
@@ -26,113 +25,113 @@ cas de ``__new__()`` et ``__init__()``.
    str(objet)                  # objet.__str__()
 
    # Appel d'une fonction
-   fonction()                  # fonction.__call__() <- intéressant celui-là !
+   fonction()                  # fonction.__call__()
 
-**Plus d’informations :** `Documentation Python
-3 <https://docs.python.org/3/reference/datamodel.html#specialnames>`__,
-`OpenClassroom <https://openclassrooms.com/courses/apprenez-a-programmer-en-python/les-methodes-speciales-1>`__
+.. admonition:: Référence 
+
+   `Documentation Python 3 <https://docs.python.org/3/reference/datamodel.html#specialnames>`__
 
 Création, initialisation et finalisation
 ----------------------------------------
 
-``Objet.__new__(cls[, *args, **kwargs])``
-    
+.. function:: Objet.__new__(cls[, *args, **kwargs])
 
    Créateur de l’instance. C’est une méthode statique qui prend en
-   premier paramètre obligatoire la classe de l’instance à créer. Les
-   arguments suivants sont ceux passés à l’initialiseur. Cette méthode
-   doit renvoyer une nouvelle instance ; L’initialiseur est alors
-   appelé. En général, on n’implémente pas cette méthode, sauf dans
-   certains cas particuliers.
+   premier paramètre obligatoire la classe de l’instance à créer.Cette méthode
+   doit renvoyer une nouvelle instance (de ``cls``) ; l'initialiseur est alors
+   appelé avec comme argument ``self`` la nouvelle instance créée. Les
+   autres paramètres sont passés à la suite.
+
+   Sauf dans certains cas particuliers, on utilise plutôt ``__init__()`` pour
+   initialiser un objet. Implémenter ``__new__()`` est utile :
+
+   * lorsque l'on définit des métaclasses ;
+   * lorsque l'on veut définir une sous-classe d'un type natif.
 
    Cette méthode statique est un cas particulier qui ne nécessite pas de
    décorateur ``@staticmethod``.
 
-``Objet.__init__(self[, *args, **kwargs])``
-    
-
-   Initialiseur de l’instance. C’est ici qu’on initialise les attributs
-   de l’instance.
-
-Ces deux méthodes forment le constructeur[constructeur] de l’instance,
-elles sont appelées lorsqu’on appelle la classe pour construire un
-objet. Si on surcharge ces méthodes, il ne faut pas oublier d’appeler
-les méthodes héritées grâce à ``super()``. Dans le cas où la classe
-hérite uniquement d’\ ``object``, il n’y a pas besoin d’appeler
-``super().__init__()`` car les instances d’\ ``object`` n’ont aucun
-attribut (donc il n’y a pas d’initialisation).
-
-**Exemple :** On veut définir une classe singleton qui ne peut créer
-qu’une instance.
+**Exemple :** On veut définir une sous-classe de ``str`` avec un attribut
+``language`` indiquant la langue de la chaîne de caractères. On surcharge
+``__new__()`` pour définir un nouveau constructeur qui prendra en paramètres
+la chaîne de caractères et le code de langue.
 
 .. code:: python3
 
-   class Singleton:
-       """Classe qui ne peut instancier qu'une fois."""
+   class LangString:
+       """str subclass with language attribute."""
+       def __new__(cls, string, language):
+           instance = super().__new__(cls, string)
+           instance.language = language
+           return instance
+   
+   mystr = LangString("Bonjour !", "fr")
+   print(mystr) # Bonjour !
+   print(mystr.language) # fr
 
-       instance = None
+.. function:: Objet.__init__(self[, *args, **kwargs])
+    
+   Initialiseur de l’instance. C’est ici qu’on initialise les attributs
+   de l’instance.
 
-       def __new__(cls, *args, **kwargs):
-           if not cls.instance:
-               cls.instance = super().__new__(cls) # object.__new__() ne prend que le type à instancier comme paramètre
-               return cls.instance
-           else:
-               raise TypeError(f"Cette classe singleton possède déjà une instance : {cls.instance}")
+Ces deux méthodes forment le constructeur de l’instance,
+elles sont appelées lorsqu’on appelle la classe pour construire un
+objet. Si on surcharge ces méthodes, il ne faut pas oublier d’appeler
+les méthodes héritées grâce à ``super()``. Dans le cas où la classe
+hérite uniquement d’``object``, il n’y a pas besoin d’appeler
+``super().__init__()`` car les instances d’``object`` n’ont aucun
+attribut (donc il n’y a pas d’initialisation).
 
-       def __del__(self):
-           Singleton.instance = None
 
-``Objet.__del__(self)``
+.. function:: Objet.__del__(self)
     
 
    Finaliseur de l’instance. Cette méthode est appelée lorsqu’un objet
    est sur le point d’être détruit, mais n’est pas responsable de sa
-   destruction. Lorsqu’on hérite uniquement d’\ ``object``, il n’est pas
+   destruction. Lorsqu’on hérite uniquement d'``object``, il n’est pas
    nécessaire d’appeler ``super().__del__()`` car elle ne fait rien. La
-   syntaxe \|del variable\| décrémente le nombre de références vers
-   l’\ ``objet`` correspondant. Si celui-ci atteint zéro, alors
+   syntaxe ``del variable`` décrémente le nombre de références vers
+   l'``objet`` correspondant. Si celui-ci atteint zéro, alors
    ``objet.__del__()`` est appelée.
 
 Représentation et chaîne de caractères d’un objet
 -------------------------------------------------
 
-Si on crée une instance de la classe ``Singleton`` précédente et qu’on
-demande sa représentation dans l’interpréteur, il nous renvoie quelque
-chose de pas très explicite:
+Par défaut, évaluer une instance d'une classe personnalisée dans
+l'interpréteur interactif n'affiche pas quelque chose d'explicite :
 
 .. code:: pycon
 
-   >>> inst = Singleton()
-   >>> inst
-   <__main__.Singleton object at 0x000002B07DB73898>
+   >>> class MaClasse:
+   >>> ... pass
+   >>> ...
+   >>> MaClasse()
+   <__main__.MaClasse object at 0x7f6b90f7ba00>
 
-On doit donc définir une méthode de représentation.
+On peut définir une méthode pour afficher une meilleure représentation.
 
-``Objet.__repr__(self)``
+.. function:: Objet.__repr__(self)
     
-
-   Appelée par ``repr()``, ou bien lorsqu’on demande l’objet dans
-   l’interpréteur. Cette méthode calcule et renvoie une chaîne de
-   caractères compréhensible canonique , c’est-à-dire qu’elle doit
-   ressembler à une expression Python à partir de laquelle on doit
-   pouvoir recréer un objet de la même valeur, c’est à dire telle que
-   ``repr(objet) == objet``. Si ce n’est pas possible, elle devrait
+   Appelée par ``repr()``, ou bien lorsqu’on évalue l’objet dans
+   l’interpréteur interactif. Cette méthode calcule et renvoie une chaîne de
+   caractères ressemblant à une expression permettant de recréer un objet
+   semblable (avec les mêmes valeurs d'attributs). Si ce n’est pas possible, elle devrait
    renvoyer une description entre chevrons ``"<description>"``.
+
+**Exemple :** En reprenant l'exemple précédent de ``LangString``, ``mystr``
+pourrait avoir comme représentation ``'LangString("Bonjour !", "fr")'``.
 
 Parfois, on veut quelque chose de plus joli destiné à un véritable
 affichage (quand on appelle ``print()``). On peut vouloir aussi avoir la
 capacité de convertir un objet en une chaîne de caractère avec
-``str()``. On doit alors définir une autre méthode spéciale:
+``str()``. On doit alors définir une autre méthode spéciale :
 
-``Objet.__str__(self)``
+.. function:: Objet.__str__(self)
     
-
    Appelée par ``str()``, ``print()`` et ``format()``. Cette méthode
    renvoie une chaîne de caractère correspondant à la représentation
    informelle de l’objet. Si cette méthode n’est pas définie, alors
    ``__repr__()`` est utilisée à la place.
-
-**Exemple :** L’exemple suivant
 
 .. code:: python3
 
@@ -141,33 +140,25 @@ capacité de convertir un objet en une chaîne de caractère avec
             self.attribut = attr
 
        def __repr__(self):
-           return "MaClasse(attribut={})".format(self.attribut)
+           return f"MaClasse(attribut='{self.attribut}')"
 
        def __str__(self):
-           return "Instance de MaClasse ayant comme attribut {}"
-                 .format(self.attribut)
+           return f"Instance de MaClasse ayant comme attribut {self.attribut}"
 
-permet de faire:
-
-.. code:: pycon
-
-   >>> obj = MaClasse("Exemple")
-   >>> obj
-   MaClasse(attribut=Exemple)
-   >>> print(obj)
-   Instance de MaClasse ayant comme attribut Exemple.
+   obj = MaClasse("Exemple")
+   print(repr(obj)) # MaClasse(attribut='Exemple')
+   print(obj) # Instance de MaClasse ayant comme attribut Exemple.
 
 Accès et modification des attributs
 -----------------------------------
 
 On a vu précédemment les propriétés qui permettent une sorte
 d’encapsulation des attributs. Lorsqu’on veut accéder à un attribut par
-la syntaxe \|instance.attr\| Python appelle en premier une méthode
+la syntaxe ``instance.attr`` Python appelle en premier une méthode
 spéciale.
 
-``Objet.__getattribute__(self, name)``
+.. function:: Objet.__getattribute__(self, name)
     
-
    Appelée en premier lorsque l’on veut accéder à un attribut par les
    syntaxes
 
@@ -181,10 +172,10 @@ spéciale.
    sinon. Dans ce cas, la méthode ``__getattr__()`` est appelée.
 
    Cette méthode est définie dans la classe ``object``, le mécanisme
-   d’accès par défaut aux attributs est donc le suivant:
+   d’accès par défaut aux attributs est le suivant :
 
    #. ``object.__getattribute__()`` commence par rechercher ``name``
-      sous forme de dans le dictionnaire ``__dict__`` de la classe de
+      sous forme de descripteur dans le dictionnaire ``__dict__`` de la classe de
       l’instance (et de ses classes parentes s’il ne trouve pas).
 
       .. code:: python3
@@ -201,18 +192,18 @@ spéciale.
          objet.__dict__[name]        
 
    #. Si ``object.__getattribute__()`` n’a pas trouvé ``name`` dans
-      aucun ``__dict__``, elle lève une exception\ ``AttributeError``.
+      aucun ``__dict__``, elle lève une exception ``AttributeError``.
 
    Surcharger cette méthode va donc modifier le mécanisme par défaut.
    Cependant, pour les attributs dont on ne veut pas modifier l’accès,
    il faut penser à appeler la méthode ``__getattribute__()``
-   d’\ ``object`` ou de la classe parente. Pour les attributs dont on
+   d’``object`` ou de la classe parente. Pour les attributs dont on
    veut modifier le comportement d’accès, il ne faut pas utiliser la
    syntaxe classique ``objet.attr`` car cela va créer une récursivité
-   infinie, il faut avoir recours à\ ``super().__getattribute__()`` ou
+   infinie, il faut avoir recours à ``super().__getattribute__()`` ou
    bien accéder directement aux descripteurs ou clé du dictionnaire.
 
-``Objet.__getattr__(self, name)``
+.. function:: Objet.__getattr__(self, name)
     
 
    Appelée si ``__getattribute__()`` lève une exception
@@ -221,7 +212,7 @@ spéciale.
    attributs qui ne sont pas initialisés mais dont on veut pouvoir
    calculer la valeur.
 
-``Objet.__setattr__(self, name, value)``
+.. function :: Objet.__setattr__(self, name, value)
     
 
    Appelée lorsque l’on assigne une valeur à un attribut:
@@ -251,14 +242,13 @@ spéciale.
    Surcharger cette méthode va donc modifier le mécanisme par défaut.
    Cependant, pour les attributs dont on ne veut pas modifier le
    comportement de modification, il faut penser à appeler la méthode
-   ``__setattr__()`` d’\ ``object`` ou de la classe parente. Pour les
+   ``__setattr__()`` d’``object`` ou de la classe parente. Pour les
    attributs dont on veut surcharger le mécanisme de modification, il y
    a le même problème que pour ``__getattribute__()``, attention de ne
    pas créer de récursivité infinie.
 
-``Objet.__delattr__(self, name)``
+.. function:: Objet.__delattr__(self, name)
     
-
    Appelée lorsque l’on veut détruire un attribut :
 
    .. code:: python3
@@ -271,72 +261,27 @@ spéciale.
    ``super().__delattr__()`` pour éviter une récursivité infinie lors de
    l’appel à la suppression de l’attribut.
 
-Par exemple, en reprenant , on voudrait que l’attribut ``_celsius`` ne
-soit pas accessible (même par si convention, on n’utilise pas
-directement les attributs commençant par ``_`` en Python): cela
-casserait tout le contrôle que l’on essaie d’avoir! Une solution à cela
-serait le recours à ``__getattribute__()`` et ``__setattr__()``.
-Ci-dessous un exemple de classe qui possède une propriété qui utilise un
-attribut que l’on désire privé :
+**Exemple :** On peut créer une sous classe de ``dict`` pour accéder aux
+items par la notation pointée ``dictionaire.item``
 
 .. code:: python3
 
-   class ClassWithAPrivateAttribute:
-       def __init__(self, attr):
-           self.attr = attr
-       
-       # la propriété qui sera parfaitement accessible
-       @property
-       def attr(self):
-           """Accès public à attr."""
-           # on cherche directement dans __dict__ pour ne pas appeler __getattribute__()
-           return self.__dict__['_attr']
-       
-       # son setter
-       @attr.setter
-       def attr(self, value):
-           print("Calculs et autres logiques...")
-           # idem, on modifie directement __dict__ pour ne pas appeler __setattr__()
-           self.__dict__['_attr'] = value
-       
-       # c'est ici que l'on va restreindre l'accès à _attr
-       def __getattribute__(self, name):
-           """Bloque l'accès aux attributs préfixés de '_'."""
-           if name[0] == '_' and name[1] != '_':
-               raise AttributeError("'{}' est un attribut privé.".format(name))
-           return super().__getattribute__(name)
-       
-       # et ici que l'on bloque les modifs
+   class DottedDict(dict):
+       def __getattr__(self, name):
+           return self[name]
+      
        def __setattr__(self, name, value):
-           """Bloque la modification des attributs préfixés de '_'."""
-           if name[0] == '_' and name[1] != '_':
-               raise AttributeError("'{}' est un attribut privé.".format(name))
-           super().__setattr__(name, value)
+           if name in self:
+               self[name] = value
+           else:
+               super().__setattr__(name, value)
 
-L’accès à ``_attr`` est restreint:
+   d = DottedDict({"a": 1, "b": 2})
+   print(d) # {'a': 1, 'b': 2}
+   print(d.a) # 1
+   d.a = 2
+   print(d) # {'a': 2, 'b': 2}
 
-.. code:: pycon
-
-   >>> instance = ClassWithAPrivateAttribute(123)
-   >>> instance.attr
-   123
-   >>> instance.attr = 456
-   'Calculs et autres logiques...'
-   >>> instance.attr
-   456
-   >>> instance._attr = 123 # tentative d'accès direct à l'attribut caché
-   Traceback (most recent call last):
-     File "<pyshell#28>", line 1, in <module>
-       instance._attr = 123
-     File "....py", line 28, in __setattr__
-       raise AttributeError("'{}' est un attribut privé.".format(name))
-   AttributeError: '_attr' est un attribut privé.
-   >>> instance.__dict__['_attr']
-   456
-
-Cet exemple peut paraître incomplet puisqu’on peut encore modifier les
-attributs en passant par ``__dict__``. Tout dépend à quel point on veut
-restreindre l’accès.
 
 Surcharges d’opérateur
 ----------------------
@@ -363,6 +308,11 @@ exécute ``objet.__add__(5)``, alors que ``5 + objet`` exécute
 ``int.__add__(5)``. Pour que l’opération soit symétrique, il faut aussi
 définir ces fonctions avec le préfixe ``r`` (par exemple
 ``__radd__()``).
+
+.. admonition:: Référence
+
+   `Liste des méthodes d'opérateurs dans la documentation Python
+   <https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types>`_
 
 Duck typing
 -----------

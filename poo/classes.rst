@@ -5,12 +5,11 @@ Les classes permettent des créer des objets appelés instances qui
 partagent des caractéristiques communes. Une classe est en fait un
 gabarit qui nous permet de créer un certain type d’objets.
 
-.. admonition:: Plus d'informations 
+.. admonition:: Références
 
-    * `Introduction OpenClassrooms 
-      <https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes>`__
-    * `Documentation Python 3 <https://docs.python.org/fr/3/tutorial/classes.html>`__
-    * `Wikilivres <https://fr.wikibooks.org/wiki/Programmation_Python/Classes#Définition_d'une_classe_élé mentaire>`__
+   * `Cours Zeste de Savoir d'Antoine Rozo
+     <https://zestedesavoir.com/tutoriels/1253/la-programmation-orientee-objet-en-python/1-object/>`__
+   * `Documentation Python 3 <https://docs.python.org/fr/3/tutorial/classes.html>`__
 
 Structure d’une classe
 ----------------------
@@ -264,11 +263,13 @@ d’une autre.
    >>> isinstance(bibli, object)
    True
 
-**Plus d’informations :**
-`OpenClassrooms <https://openclassrooms.com/courses/apprenez-a-programmer-en-python/l-heritage-9>`__,
-`Documentation Python
-3 <https://docs.python.org/fr/3/tutorial/classes.html?highlight=héritage#inheritance>`__,
-`Programiz <https://www.programiz.com/python-programming/inheritance>`__
+.. admonition:: Plus d'informations
+   :class: seealso
+
+   * `OpenClassrooms <https://openclassrooms.com/courses/apprenez-a-programmer-en-python/l-heritage-9>`__
+   * `Documentation Python
+     3 <https://docs.python.org/fr/3/tutorial/classes.html?highlight=héritage#inheritance>`__
+   * `Programiz <https://www.programiz.com/python-programming/inheritance>`__
 
 Ordre de résolution de méthode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -405,10 +406,13 @@ On utilise la propriété de la manière suivante:
        raise ValueError("Une température en degrés Celsius doit être supérieure à -273°C.")
    ValueError: Une température en degrés Celsius doit être supérieure à -273°C.
 
-**Plus d’informations :**\ `Documentation Python
-3 <https://docs.python.org/fr/3/library/functions.html?highlight=property#property>`__,
-`Priorités entre propriété et méthodes
-spéciales <https://stackoverflow.com/questions/15750522/class-properties-and-setattr/15751159#15751159>`__
+.. admonition:: Plus d'informations
+   :class: seealso
+   
+   * `Documentation Python
+     3 <https://docs.python.org/fr/3/library/functions.html?highlight=property#property>`__
+   * `Priorités entre propriété et méthodes spéciales (Stack Overflow)
+     <https://stackoverflow.com/questions/15750522/class-properties-and-setattr/15751159#15751159>`__
 
 Méthodes statiques et méthodes de classes
 -----------------------------------------
@@ -416,85 +420,103 @@ Méthodes statiques et méthodes de classes
 Méthode statique
 ~~~~~~~~~~~~~~~~
 
-[sec:staticmethod]
+.. admonition:: Référence
+   
+   `Documentation Python 3 <https://docs.python.org/3/library/functions.html#staticmethod>`__
 
 Les méthodes que l’on a vues jusqu’à maintenant agissent sur les
 instances des classes : elles prennent toujours en premier argument le
 mot clé ``self`` qui correspond à l’instance elle même. Lorsque l’on
-appelle une telle méthode sur une instance comme ceci:
-\|instance.methode(*args, \**kwargs)\| Python exécute en fait:
-\|type(instance).methode(instance, \*args, \**kwargs)\| Évaluer
-``type()`` sur un objet renvoie sa classe.
+appelle une telle méthode sur une instance comme ceci :
+``instance.methode(*args, **kwargs)`` Python exécute en fait
+``type(instance).methode(instance, *args, **kwargs)``.
 
 En fait, ces deux objets sont différents. ``Classe.methode`` est une
 simple fonction, alors que ``instance.methode`` est une méthode
 partiellement évaluée sur l’instance (méthode liée, en anglais bound
-method ), c’est-à-dire que l’instance est mise en premier argument.
+method), c’est-à-dire que l’instance est mise en premier argument.
 
 Parfois, on écrit des méthodes qui n’ont pas d’incidence sur les
-instances de la classe. Imaginons une classe ``Maths`` qui regrouperait
-des opérations basiques:
+instances de la classe. Si l'on reprend la classe ``Temperature``, on
+peut envisager d'externaliser le calcul de la température (ici le
+calcul est simple, mais on peut extrapoler l'exemple à des choses plus
+complexes).
 
 .. code:: python3
 
-   class Maths:
-       def addition(x, y):
-           return x + y
+   class Temperature:
+       def __init__(self, celsius):
+           self.celsius = celsius
+       
+       @property
+       def celsius(self):
+           """Propriété 'celsius'.
+           
+           Vérifie si la température est supérieure à -273°C avant d'assigner."""
+           return self._celsius
 
-       def multiplication(x, y):
-           return x * y
+       @celsius.setter
+       def celsius(self, value):
+           if value < -273:
+               raise ValueError("Une température en degrés Celsius doit être supérieure à -273°C.")
+           self._celsius = value
+               
+       @property
+       def fahrenheit(self):
+           """Propriété 'fahrenheit'."""
+           return self.celsius_to_fahrenheit(self.celsius)
 
-       def division(x, y):
-           return x / y
+       @fahrenheit.setter
+       def fahrenheit(self, value):
+           self.celsius = self.fahrenheit_to_celsius(value)
+      
+       def celsius_to_fahrenheit(celsius):
+           return celsius * 1.8 + 32
+       
+       def fahrenheit_to_celsius(fahrenheit):
+           return (fahrenheit - 32) / 1.8
+
+Si l'on esssaie cette nouvelle définition, on fait face à une erreur :
+
 
 .. code:: pycon
 
-   >>> Math.addition(1, 3)
-   4
+   >>> t = Temperature(21)
+   >>> t.fahrenheit
+   TypeError: celsius_to_fahrenheit() takes 1 positional argument but 2 were given
 
-Jusqu’ici tout va bien. Mais imaginons que la classe se développe et que
-l’on instancie des objets ``Maths``. On aura un soucis :
+Le problème étant que Python a en fait exécuté : ``Temperature.celsius_to_fahrenheit(t, 21)``
 
-.. code:: pycon
-
-   >>> Maths().addition(1, 3)
-   Traceback (most recent call last):
-     File "<stdin>", line 1, in <module>
-   TypeError: addition() takes 2 positional arguments but 3 were given
-
-Le problème étant que Python a en fait exécuté:
-
-\|Maths.addition(Maths(), x, y)\|
-
-Pour remédier à cela, il existe le décorateur ``@staticmethod``. On doit
-écrire alors:
+Pour remédier à cela, il existe le décorateur ``@staticmethod``. Il va permettre d'indiquer
+à Python que cette méthode ne prend pas l'instance en premier paramètre.
 
 .. code:: python3
 
-   class Maths:
-       @staticmethod
-       def addition(x, y):
-           return x + y
+   class Temperature:
+      # ...
 
        @staticmethod
-       def multiplication(x, y):
-           return x * y
-
+       def celsius_to_fahrenheit(celsius):
+           return celsius * 1.8 + 32
+       
        @staticmethod
-       def division(x, y):
-           return x / y
+       def fahrenheit_to_celsius(fahrenheit):
+           return (fahrenheit - 32) / 1.8
 
-On peut ainsi écrire sans crainte:
+On peut ainsi écrire sans crainte :
 
 .. code:: pycon
 
-   >>> Maths().addition(1, 3)
-   4
+   >>> t = Temperature(21)
+   >>> t.fahrenheit
+   69.80000000000001
 
 Méthode de classe
 ~~~~~~~~~~~~~~~~~
 
-[sec:classmethod]
+.. admonition:: Référence
+   
+   `Documentation Python 3 <https://docs.python.org/3/library/functions.html#classmethod>`__
 
 Parfois, on veut pouvoir agir sur la classe et non sur l’instance. Dans
 ce cas, la méthode de classe prend en premier paramètre ``cls`` (la
@@ -597,8 +619,11 @@ la différence des deux notions.
 Pour avoir ``homme1`` de type ``Homme``, il faut redéfinir la méthode
 statique dans la classe fille.
 
-**Plus d’informations :** `Méthode statique sur
-Programiz <https://www.programiz.com/python-programming/methods/built-in/staticmethod>`__,
-`Méthode de classe sur
-Programiz <https://www.programiz.com/python-programming/methods/built-in/classmethod>`__,
-`StackOverflow <https://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python/1669524#1669524>`__
+.. admonition:: Plus d'informations
+   :class: seealso
+   
+   * `Méthode statique sur Programiz
+     <https://www.programiz.com/python-programming/methods/built-in/staticmethod>`__
+   * `Méthode de classe sur Programiz
+     <https://www.programiz.com/python-programming/methods/built-in/classmethod>`__
+   * `StackOverflow <https://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python/1669524#1669524>`__

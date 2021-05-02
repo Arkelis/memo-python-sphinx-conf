@@ -1,19 +1,8 @@
-.. Mémo Python documentation master file, created by
-   sphinx-quickstart on Tue Sep  4 14:09:02 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 =================
 Grand Mémo Python
 =================
 
-.. warning::
-
-    Ceci est la version web du PDF https://www.pycolore.fr/python.pdf. Elle est en
-    cours de construction et n'est pas aussi complète. Il y a aussi des bugs,
-    notamment de liens internes.
-
-Le document considère que vous avez au moins un niveau prépa en Python,
+Ce mémo considère que vous avez au moins un niveau prépa en Python,
 (tout simplement parce que c'est avec ce niveau que j'ai commencé à le rédiger)
 la définition de fonctions, les boucles, les conditions et la manipulation
 des listes est supposée connue. La première partie concerne la
@@ -26,15 +15,11 @@ Sauf exception, on considère qu’on travaille sur **Python 3.7** et sur
 une distribution GNU/Linux (par exemple: Linux Mint, Fedora, Solus,
 Debian, Arch Linux).
 
-Ce document est écrit au format TeX puis compilé avec XeLaTeX (et minted
-pour les sections de code) tantôt sur Windows, tantôt sur Fedora (ça ne
-change pas le résultat). Il est disponible au téléchargement (pour
-mettre le document à jour) en cliquant sur ce lien:
-`https://www.pycolore.fr/python.pdf <https://www.pycolore.fr/python.pdf>`__.
-
-Vous lisez la version Web.
+Ce document est écrit au format reStructuredText puis compilé avec l'utilitaire
+Sphinx.
 
 .. admonition:: Notation
+   :class: tip
 
    Pour la documentation des méthodes:
 
@@ -58,7 +43,7 @@ Vous lisez la version Web.
 
 .. warning::
 
-    Ce document est encore incomplet, des sections sont susceptibles d’être vides.
+    Ce document en constante construction, des sections sont susceptibles d’être vides.
 
 .. toctree::
    :maxdepth: 2

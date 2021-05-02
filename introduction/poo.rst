@@ -9,9 +9,87 @@ Objets
     Dans cette partie, nous allons modéliser un monde peuplé de fourmis.
 
 Tout est objet en Python, des nombres aux listes en passant par les
-modules et les exceptions. Tout objet possède un type, un autre objet
+modules et les exceptions. Par exemple, on peut visualiser tous les
+attributs et méthodes d'un entier :
+
+.. code::
+
+   >>> dir(1)
+   ['__abs__',
+    '__add__',
+    '__and__',
+    '__bool__',
+    '__ceil__',
+    '__class__',
+    '__delattr__',
+    '__dir__',
+    '__divmod__',
+    '__doc__',
+    '__eq__',
+    '__float__',
+    '__floor__',
+    '__floordiv__',
+    '__format__',
+    '__ge__',
+    '__getattribute__',
+    '__getnewargs__',
+    '__gt__',
+    '__hash__',
+    '__index__',
+    '__init__',
+    '__init_subclass__',
+    '__int__',
+    '__invert__',
+    '__le__',
+    '__lshift__',
+    '__lt__',
+    '__mod__',
+    '__mul__',
+    '__ne__',
+    '__neg__',
+    '__new__',
+    '__or__',
+    '__pos__',
+    '__pow__',
+    '__radd__',
+    '__rand__',
+    '__rdivmod__',
+    '__reduce__',
+    '__reduce_ex__',
+    '__repr__',
+    '__rfloordiv__',
+    '__rlshift__',
+    '__rmod__',
+    '__rmul__',
+    '__ror__',
+    '__round__',
+    '__rpow__',
+    '__rrshift__',
+    '__rshift__',
+    '__rsub__',
+    '__rtruediv__',
+    '__rxor__',
+    '__setattr__',
+    '__sizeof__',
+    '__str__',
+    '__sub__',
+    '__subclasshook__',
+    '__truediv__',
+    '__trunc__',
+    '__xor__',
+    'as_integer_ratio',
+    'bit_length',
+    'conjugate',
+    'denominator',
+    'from_bytes',
+    'imag',
+    'numerator',
+    'real',
+    'to_bytes']
+
+Tout objet possède un type, un autre objet
 qui est responsable de sa création. On peut le récupérer grâce à la
-fonction native ``type()``:
+fonction native ``type()`` :
 
 .. code:: pycon
 
@@ -23,7 +101,7 @@ fonction native ``type()``:
    >>> type(os) # et on lui demande son type
    <class 'module'>
 
-On peut demander le type de leur type:
+On peut demander le type de leur type :
 
 .. code:: pycon
 
@@ -34,11 +112,11 @@ On peut demander le type de leur type:
    >>> type(type(os))
    <class 'type'>
 
-Nativement, tous les types sont créés par ``type``. On peut créer nos
-objets nous-mêmes grâce à ``type()``: il suffit de lui donner un nom de
-type, un tuple contenant ses parents et un dictionnaire d’attributs.
+Toues les types natifs sont créés par ``type()``. On peut créer le nôtre 
+grâce à cette fonction : il suffit de lui donner un nom de type, un tuple
+contenant ses parents et un dictionnaire d’attributs.
 
-Commençons par créer un objet élémentaire sans attribut ni parent.
+Commençons par créer un type d'objet élémentaire sans attribut ni parent.
 
 .. code:: pycon
 
@@ -64,11 +142,9 @@ maintenant notre première instance.
    {'role': 'ouvrière'}
 
 Par défaut, on peut ajouter à la volée de nouveaux attributs à un objet
-instancié par une classe. En pratique, on ne crée pas nos classes avec
-la fonction ``type()``, ce n’est pas très pratique si on veut que notre
-classe ait un comportement plus complexe. En effet, une classe peut
-posséder des méthodes, des propriétés, que l’on préfère écrire en
-utilisant la définition de classes.
+instancié par une classe. En pratique, on ne définit pas nos classes avec
+la fonction ``type()`` directement, sauf dans des cas où l'on veut créer
+des classes dynamiquement. On utilise plutôt l'instruction ``class``.
 
 Classes
 +++++++
@@ -84,7 +160,7 @@ notre exemple précédent, ça donne ça :
 .. code:: python3
 
    class Fourmi:
-       ...
+       pass
 
 Il n’y a pas grand chose dedans pour l’instant, mais ça va venir!
 
@@ -96,8 +172,8 @@ communes à la classe:
 #. des méthodes, des fonctions propres aux instances et qui agissent par
    exemple sur leurs attributs.
 
-Les classes sont des gabarits qui permettent de créer un même type
-d’objet.
+Les classes sont des gabarits qui permettent de créer des objets du même
+type.
 
 Attributs
 ~~~~~~~~~
@@ -125,7 +201,7 @@ classe. Chaque objet de cette classe y aura accès:
    32
 
 Nos mondes ont une largeur et une hauteur, mais comme ce sont des
-attributs de classe, ils ont tous la même taille; ce serait plus
+attributs de classe, ils ont tous la même taille ; ce serait plus
 intéressant de créer des mondes de taille différentes. On peut
 parfaitement surcharger les attributs de classe pour en faire des
 attributs d’instance:
@@ -136,21 +212,67 @@ attributs d’instance:
    >>> vars(monde1)
    {'largeur': 64}
 
-On remarque que les attributs de classe ne sont pas renvoyées par
-``vars()``. Cela est dû au fait que les attributs de classe sont gardés
-uniquement dans la classe; ainsi une modification d’attribut de classe
-impactera toutes les instances.
+.. admonition:: Remarque
+    :class: tip
 
-Initialisation
-~~~~~~~~~~~~~~
+    Les attributs de classe ne sont pas renvoyées par
+    ``vars()``. Cela est dû au fait que les attributs de classe sont gardés
+    uniquement dans la classe (dans l'attribut spécial ``__dict__``) ;
+    ainsi une modification d’attribut de classe impactera toutes les instances.
 
-Maintenant, on veut pouvoir initialiser automatiquement des variables.
-Définir la taille des mondes après leur création n’est pas gênant pour
-l’instant, mais quand l’initialisation comprend de nombreux attributs,
-cela devient fastidieux. On crée pour cela une fonction dans la classe
-appelée initialiseur.
+    Appeler ``vars(objet)`` renvoie ``objet.__dict__``.
+
+Méthodes
+~~~~~~~~
+
+On peut définir des opérations qui vont agir sur l'état des instances (leurs
+attributs). De telles fonctions sont appelées méthodes, elles prennent en 
+premier paramètre l'instance elle-même, nommé par convention ``self``. Par
+exemple, on peut définir une méthodes qui va permettre à la fourmi de se déplacer
 
 .. code:: python3
+
+   class Fourmi:
+       x = 0
+       y = 0
+
+       def bouger(self, x, y):
+           self.x += x
+           self.y += y
+
+Une méthode s’utilise comme ceci:
+
+.. code:: pycon
+
+   >>> fourmi = Fourmi()
+   >>> fourmi.bouger(1, 1)
+   >>> vars(fourmi)
+   {'x': 1, 'y': 1}
+
+.. admonition:: Remarque
+   :class: tip
+
+   Lorsqu'on appelle une méthode sur une instance, Python passe automatiquement
+   l'instance en tant que premier paramètre, il n'est pas nécessaire de fournir
+   l'argument ``self``. 
+   
+   En fait, lorsque l'on écrit, ``objet.methode(argument)``, c'est comme si
+   l'on écrivait ``Classe.methode(objet, argument)``. Derrière ce comportement
+   se cache le mécanisme des descripteurs.
+
+Initialisation
+--------------
+
+Maintenant, on veut pouvoir initialiser automatiquement les attributs d'une
+instance à sa création, par exemple donner une position de départ pour les
+fourmis différente de (0, 0) et une taille personnalisée aux mondes :
+
+.. code:: python3
+
+   class Fourmi:
+       def __init__(self, x, y):
+           self.x = x
+           self.y = y
 
    class Monde:
        def __init__(self, hauteur, largeur):
@@ -170,75 +292,15 @@ automatiquement passés à ``__init__()``:
    >>> vars(monde2)
    {'hauteur': 128, 'largeur': 64}
 
-Méthodes
-~~~~~~~~
-
-Les fonctions définies dans les classes sont appelées méthodes, c’est le
-cas de l’initialiseur ``__init__()``. On peut en définir d’autres pour
-implémenter des comportements aux instances. Par exemple, on peut
-permettre à une fourmi de se déplacer:
-
-.. code:: python3
-
-   class Fourmi:
-       def __init__(self, role, x, y):
-           self.role = role
-           self.x = x
-           self.y = y
-       
-       def move(self, x, y):
-           self.x += x
-           self.y += y
-
-Une méthode s’utilise comme ceci:
-
-.. code:: pycon
-
-   >>> fourmi = Fourmi('ouvrière', 0, 0)
-   >>> fourmi.move(1, 1)
-   >>> vars(fourmi)
-   {'role: 'ouvrière', 'x': 1, 'y': 1}
-
-Lorsque l’on évalue une méthode sur une instance, Python lui passe
-automatiquement en premier paramètre l’instance en question. Par
-convention on nomme donc toujours le premier paramètre des méthodes
-``self`` qui fait référence à l’instance en cours.
-
 Encapsulation : les propriétés
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------
 
 On a défini une classe Monde et une classe Foumi qui peut se déplacer.
-Maintenant, on veut que les fourmis ne puissent pas sortir du monde. On
-serait tenté d’utiliser des getters et setters (ou accesseurs et
-mutateurs):
+Maintenant, on veut que les fourmis ne puissent pas sortir du monde.
+Pour cela, on va encapsuler les attributs dans des propriétés.
 
-.. code:: python3
-
-   class Fourmi:
-       def __init__(self, role, x, y, monde):
-           self.role = role
-           self.set_x(x)
-           self.set_y(y)
-           self.monde = monde
-
-       def set_x(self, x):
-           if x > self.monde.largeur:
-               raise ValueError("{} est trop grand.".format(x))
-           self.x = x
-       
-       def set_y(self, y):
-           if y > self.monde.hauteur:
-               raise ValueError("{} est trop grand.".format(y))
-           self.y = y
-
-       def move(self, x, y):
-           self.set_x(x)
-           self.set_y(y)
-
-Python possède un mécanisme d’encapsulation qui s’appelle les
-propriétés, elles permettent d’avoir le même genre de comportement, mais
-de manière transparente car la modification de valeurs d’attributs garde
-la même syntaxe :
+On commence par ajouter à l'initialiseur le monde dans lequel la fourmi va
+se déplacer.
 
 .. code:: python3
 
@@ -248,15 +310,27 @@ la même syntaxe :
            self.monde = monde
            self.x = x
            self.y = y
+
+On va ensuite définir les propriétés ``x`` et ``y`` grâce à des décorateurs.
+Chacune possèdera un accesseur (`getter`) et un mutateur (`setter`). 
+
+.. code:: python3
+
+   class Fourmi:
+       # ... constructeur ...
 
        @property
        def x(self):
+           """Accesseur de la propriété x."""
+           # on stocke la véritable valeur dans un attribut dit "privé"
            return self._x
 
        @x.setter
        def x(self, value):
+           """Mutateur de la propriété x."""
            if not 0 <= value < self.monde.largeur:
-               raise ValueError("{} n'est pas compris entre 0 et {}.".format(value, self.monde.largeur))    
+               raise ValueError("{} n'est pas compris entre 0 et {}.".format(value, self.monde.largeur))
+           # c'est ici que l'on affecte la nouvelle valeur à l'attribut privé _x.
            self._x = value
                
        @property
@@ -269,22 +343,35 @@ la même syntaxe :
                raise ValueError("{} n'est pas compris entre 0 et {}.".format(value, self.monde.hauteur))
            self._y = value
 
-       def move(self, x, y):
+       def bouger(self, x, y):
            self.x = x
            self.y = y
+
+On accède à ces propriétés comme on le ferait avec des attributs classiques :
+
+.. code:: pycon
+
+   >>> m = Monde(32, 32)
+   >>> fourmi = Fourmi(0, 0, m)
+   >>> fourmi.bouger(1, 2)
+   >>> fourmi.x
+   1
+   >>> fourmi.x = 3
+   >>> fourmi.x
+   3
 
 Une mauvaise affectation de ``x`` ou ``y`` engendrera une erreur:
 
 .. code:: pycon
 
-   >>> monde = Monde(32, 32)
-   >>> fourmi = Fourmi('ouvrière', 0, 0, monde)
+   >>> m = Monde(32, 32)
+   >>> fourmi = Fourmi(0, 0, m)
    >>> fourmi.x = -1
    File "<stdin>", line 1, in <module>
        fourmi.x = -1
    File "<stdin", line 15, in x
-       raise ValueError("{} est trop grand.".format(value))    
-   ValueError: -1 n'est pas compris en tre 0 et 32.
+       raise ValueError...  
+   ValueError: -1 n'est pas compris entre 0 et 32.
 
 Les propriétés utilisent un élément de syntaxe appelé décorateur (les
 lignes commençant par @), mécanisme décrit plus loin dans le document.
@@ -308,9 +395,11 @@ On fait appel à cette propriété comme à un attribut classique:
    >>> fourmi.distance_origine
    5.0
 
-**Remarque :** Les attributs privés n’existent pas en Python. Par
-convention, les attributs auxquels il est déconseillé d’accéder sont
-préfixés par un souligné : ``_attribut_prive``.
+.. admonition:: Convention sur les attributs privés
+   
+   Les attributs privés n’existent pas en Python. Par
+   convention, les attributs auxquels il est déconseillé d’accéder sont
+   préfixés par un souligné : ``_attribut_prive``.
 
 Héritage
 --------
@@ -341,7 +430,7 @@ différentes). Pour illustrer cela, on peut utiliser l’héritage:
        role = "reine"
 
        def pondre_oeuf(self):
-           ...
+           print("Oeuf pondu")
 
 Ici, les nouvelles classes ``Ouvriere`` et ``Reine`` héritent de la
 classe ``Fourmi``: elles héritent donc de tout le contenu de cette
@@ -350,7 +439,19 @@ dernière. Autrement dit, tout ce qui est défini dans la classe
 le rôle sera le même pour les fourmis instanciées par une même classe,
 on peut en faire un attribut de classe. Chaque classe fille possède son
 propre comportement : seules les ouvrières peuvent aller chercher de la
-nourriture, tandis que la reine sait pondre des oeufs.
+nourriture, tandis que la reine sait pondre des oeufs. Néanmoins les deux
+classes de fourmis peuvent bouger
+
+.. code:: pycon
+
+   >>> m = Monde(32, 32)
+   >>> ouvriere = Ouvriere(0, 0, m)
+   >>> reine = Reine(0, 0, m)
+   >>> reine.pondre_oeuf()
+   Oeuf pondu
+   >>> reine.bouger(1, 1)
+   >>> reine.x
+   1
 
 Affichage
 ---------
@@ -362,6 +463,7 @@ pas grand chose:
 
    >>> fourmi = Ouvriere()
    >>> print(fourmi)
+   <__main__.Ouvriere object at 0x7f8db5e1b070>
    >>> fourmi
    <__main__.Ouvriere object at 0x7f8db5e1b070>
 
@@ -388,7 +490,7 @@ utilisée lorsqu’on évalue un objet, la seconde lorsqu’on la passe à
        
 
        def __str__(self):
-           return f"fourmi {self.role} située aux coordonnées ({self.x}, self.y})"
+           return f"fourmi {self.role} située aux coordonnées ({self.x}, {self.y})"
 
 On essaie de renvoyer en général une chaine de caractères permettant de
 recréer l’objet facilement avec ``__repr__()``. On peut être plus souple
@@ -401,7 +503,7 @@ avec ``__str__()``.
    >>> ouvriere
    Ouvriere(x=0, y=0, monde=Monde(hauteur=16, largeur=16))
    >>> print(ouvriere)
-   fourmi ouvrière
+   fourmi ouvrière située aux coordonnées (0, 0)
 
 Méthodes spéciales
 ------------------
@@ -431,7 +533,7 @@ toutes les fourmis qui le peuplent.
 On peut maintenant créer un monde, lui ajouter des fourmis et les
 parcourir.
 
-.. code:: pycon
+.. code-block:: pycon
 
    >>> monde = Monde(16, 16)
    >>> for i in range(10):
@@ -450,3 +552,6 @@ parcourir.
    fourmi ouvrière située aux coordonnées (7, 7)
    fourmi ouvrière située aux coordonnées (8, 8)
    fourmi ouvrière située aux coordonnées (9, 9)
+
+Dans la partie suivante, on approfondit l'ensemble des concepts abordés
+dans cette introduction. Bonne lecture !

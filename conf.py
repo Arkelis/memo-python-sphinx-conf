@@ -81,6 +81,7 @@ highlight_language = 'python3'
 #
 html_theme = 'furo'
 html_title = "Mémo Python"
+html_short_title = "Mémo Python"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -174,6 +175,8 @@ texinfo_documents = [
      author, 'MmoPython', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+smartquotes = False
 
 # -- Polices personnalisées --------------------------------------------------
 
